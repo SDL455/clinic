@@ -57,10 +57,24 @@ const fetchData = async () => {
   }
 };
 
+// Fetch recent customers
+const fetchRecentCustomers = async () => {
+  try {
+    const res = await $fetch<{ success: boolean; data: Customer[] }>(
+      `/api/customers?limit=5`,
+      { headers: getAuthHeaders() }
+    );
+    if (res.success) customers.value = res.data || [];
+  } catch (err) {
+    // Ignore
+  }
+};
+
 // Search customers
 const searchCustomers = async () => {
   if (customerSearch.value.length < 2) {
-    customers.value = [];
+    // Show recent customers when search is empty
+    await fetchRecentCustomers();
     return;
   }
 
@@ -130,6 +144,10 @@ const filteredServices = computed(() =>
 
 // Add to cart
 const addProductToCart = (product: Product) => {
+  if (!selectedCustomer.value) {
+    error("ກະລຸນາເລືອກລູກຄ້າກ່ອນ");
+    return;
+  }
   const result = cart.addProduct(product);
   if (!result.success) {
     error(result.error || "ເກີດຂໍ້ຜິດພາດ");
@@ -137,6 +155,10 @@ const addProductToCart = (product: Product) => {
 };
 
 const addServiceToCart = (service: Service) => {
+  if (!selectedCustomer.value) {
+    error("ກະລຸນາເລືອກລູກຄ້າກ່ອນ");
+    return;
+  }
   cart.addService(service);
 };
 
@@ -200,6 +222,14 @@ const formatCurrency = (value: number) =>
 
 // Watch customer search
 watch(customerSearch, searchCustomers);
+
+// Watch customer modal to fetch recent customers when opened
+watch(showCustomerModal, async (isOpen) => {
+  if (isOpen) {
+    customerSearch.value = "";
+    await fetchRecentCustomers();
+  }
+});
 
 onMounted(() => {
   fetchData();
@@ -265,24 +295,25 @@ onMounted(() => {
                 v-for="product in filteredProducts"
                 :key="product.id"
                 @click="addProductToCart(product)"
-                class="p-4 rounded-xl bg-clinic-dark border border-clinic-border hover:border-clinic-accent transition-all text-left group"
+                :disabled="!selectedCustomer"
+                class="p-4 rounded-xl bg-gray-100 border border-gray-300 hover:border-clinic-accent transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300"
               >
                 <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-gray-500">
+                  <span class="text-xs text-gray-600">
                     {{ product.category?.name }}
                   </span>
                   <span
                     class="text-xs"
                     :class="
                       product.stock <= product.minStock
-                        ? 'text-amber-400'
-                        : 'text-gray-500'
+                        ? 'text-amber-600'
+                        : 'text-gray-600'
                     "
                   >
                     {{ product.stock }}
                   </span>
                 </div>
-                <p class="font-medium text-white group-hover:text-clinic-accent transition-colors line-clamp-2 text-sm">
+                <p class="font-medium text-black line-clamp-2 text-sm">
                   {{ product.name }}
                 </p>
                 <p class="text-clinic-accent font-semibold mt-2">
@@ -307,13 +338,14 @@ onMounted(() => {
                 v-for="service in filteredServices"
                 :key="service.id"
                 @click="addServiceToCart(service)"
-                class="p-4 rounded-xl bg-clinic-dark border border-clinic-border hover:border-pink-500 transition-all text-left group"
+                :disabled="!selectedCustomer"
+                class="p-4 rounded-xl bg-gray-100 border border-gray-300 hover:border-pink-500 transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300"
               >
-                <Icon name="lucide:heart-handshake" class="w-5 h-5 text-pink-400 mb-2" />
-                <p class="font-medium text-white group-hover:text-pink-400 transition-colors line-clamp-2 text-sm">
+                <Icon name="lucide:heart-handshake" class="w-5 h-5 text-pink-500 mb-2" />
+                <p class="font-medium text-black line-clamp-2 text-sm">
                   {{ service.name }}
                 </p>
-                <p class="text-pink-400 font-semibold mt-2">
+                <p class="text-pink-500 font-semibold mt-2">
                   {{ formatCurrency(service.price) }}
                 </p>
               </button>
@@ -507,22 +539,35 @@ onMounted(() => {
             v-for="customer in customers"
             :key="customer.id"
             @click="selectCustomer(customer)"
-            class="w-full p-3 rounded-lg bg-clinic-dark hover:bg-clinic-border transition-colors text-left flex items-center gap-3"
+            class="w-full p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-left flex items-center gap-3"
           >
             <div class="w-10 h-10 rounded-full bg-clinic-accent/20 flex items-center justify-center">
               <Icon name="lucide:user" class="w-5 h-5 text-clinic-accent" />
             </div>
             <div>
-              <p class="font-medium text-white">
+              <p class="font-medium text-black">
                 {{ customer.firstName }} {{ customer.lastName }}
               </p>
-              <p class="text-sm text-gray-400">{{ customer.phone }}</p>
+              <p class="text-sm text-gray-600">{{ customer.phone }}</p>
             </div>
           </button>
 
-          <div v-if="customerSearch.length >= 2 && customers.length === 0" class="text-center py-4 text-gray-400">
+          <div v-if="customerSearch.length >= 2 && customers.length === 0" class="text-center py-4 text-gray-600">
             ບໍ່ພົບລູກຄ້າ
           </div>
+          <div v-else-if="customerSearch.length < 2 && customers.length === 0" class="text-center py-4 text-gray-600">
+            ບໍ່ມີລູກຄ້າລ່າສຸດ
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-gray-200">
+          <button
+            @click="showCustomerModal = false; showNewCustomerModal = true"
+            class="btn btn-primary w-full"
+          >
+            <Icon name="lucide:user-plus" class="w-4 h-4" />
+            ເພີ່ມລູກຄ້າໃໝ່
+          </button>
         </div>
       </div>
     </Modal>

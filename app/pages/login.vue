@@ -211,6 +211,32 @@ const handleSubmit = async () => {
 </template>
 
 <style scoped>
+/* Override global black text for login page - all text should be white */
+.login-container,
+.login-container * {
+  color: #ffffff !important;
+}
+
+/* Ensure all text elements in login page are white */
+.login-container h1,
+.login-container h2,
+.login-container h3,
+.login-container h4,
+.login-container h5,
+.login-container h6,
+.login-container p,
+.login-container span,
+.login-container div,
+.login-container a,
+.login-container label,
+.login-container input,
+.login-container textarea,
+.login-container select,
+.login-container button,
+.login-container li {
+  color: #ffffff !important;
+}
+
 .login-container {
   @apply w-full max-w-md space-y-8 animate-fade-in;
 }
@@ -289,13 +315,14 @@ const handleSubmit = async () => {
 }
 
 .form-title {
-  @apply text-2xl font-bold;
-  color: #ffffff;
+  @apply font-bold;
+  font-size: 14px !important;
+  color: #ffffff !important;
 }
 
 .form-description {
-  @apply text-sm;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px !important;
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 /* Form Styles */
@@ -308,8 +335,9 @@ const handleSubmit = async () => {
 }
 
 .field-label {
-  @apply flex items-center gap-2 text-sm font-semibold;
-  color: rgba(255, 255, 255, 0.9);
+  @apply flex items-center gap-2 font-semibold;
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .label-icon {
@@ -356,8 +384,9 @@ const handleSubmit = async () => {
 
 .field-input {
   @apply w-full pl-12 pr-12 py-3.5 bg-transparent
-         focus:outline-none text-sm font-medium;
-  color: #ffffff;
+         focus:outline-none font-medium;
+  font-size: 12px !important;
+  color: #ffffff !important;
 }
 
 .field-input::placeholder {
@@ -411,6 +440,8 @@ const handleSubmit = async () => {
 
 .button-text {
   @apply text-base;
+  color: #ffffff !important;
+  font-size: 14px !important;
 }
 
 .button-shine {

@@ -11,8 +11,24 @@
     font-family: "Noto Sans Lao", sans-serif;
   }
 
+  html {
+    font-size: 14px;
+  }
+
   body {
-    @apply bg-clinic-bg text-clinic-text antialiased;
+    @apply bg-clinic-bg antialiased;
+    color: #000000;
+    font-size: 14px;
+  }
+
+  /* Override all text colors to black */
+  h1, h2, h3, h4, h5, h6, p, span, div, a, label, input, textarea, select, button, td, th, li, small, strong, em, b, i {
+    color: #000000 !important;
+  }
+
+  /* All text elements set to 14px */
+  h1, h2, h3, h4, h5, h6, p, span, div, a, label, input, textarea, select, button, td, th, li, small, strong, em, b, i {
+    font-size: 14px !important;
   }
 
   /* Custom Scrollbar */
@@ -66,8 +82,9 @@
   }
 
   .btn-secondary {
-    @apply bg-clinic-muted border border-clinic-border text-clinic-text
+    @apply bg-clinic-muted border border-clinic-border
            hover:bg-gray-200 hover:border-gray-300;
+    color: #000000 !important;
   }
 
   .btn-danger {
@@ -100,13 +117,15 @@
   .input {
     @apply w-full px-4 py-2.5 rounded-xl
            bg-clinic-surface border border-clinic-border
-           text-clinic-text placeholder-gray-400
+           placeholder-gray-400
            focus:outline-none focus:border-clinic-accent focus:ring-2 focus:ring-clinic-accent/20
            transition-all duration-200;
+    color: #000000 !important;
   }
 
   .input-label {
-    @apply block text-sm font-medium text-clinic-text mb-1.5;
+    @apply block text-sm font-medium mb-1.5;
+    color: #000000 !important;
   }
 
   .input-error {
@@ -132,11 +151,13 @@
   }
 
   .table th {
-    @apply px-4 py-3 bg-clinic-muted text-clinic-text-muted font-semibold text-sm uppercase tracking-wider;
+    @apply px-4 py-3 bg-clinic-muted font-semibold text-sm uppercase tracking-wider;
+    color: #000000 !important;
   }
 
   .table td {
-    @apply px-4 py-3 border-t border-clinic-border text-clinic-text;
+    @apply px-4 py-3 border-t border-clinic-border;
+    color: #000000 !important;
   }
 
   .table tbody tr {
@@ -203,8 +224,9 @@
   /* Menu Item Styles */
   .menu-item {
     @apply flex items-center gap-3 px-4 py-3 rounded-xl
-           text-clinic-text-muted hover:text-clinic-text hover:bg-clinic-muted
+           hover:bg-clinic-muted
            transition-all duration-200 cursor-pointer;
+    color: #000000 !important;
   }
 
   .menu-item-active {
@@ -307,6 +329,44 @@
 
   .stock-badge-ok {
     @apply bg-emerald-100 text-emerald-600;
+  }
+}
+
+/* ======================================= */
+/* Global Text Color Override */
+/* ======================================= */
+
+@layer utilities {
+  /* Override all Tailwind text color utilities to black */
+  .text-white,
+  .text-black,
+  .text-gray-50,
+  .text-gray-100,
+  .text-gray-200,
+  .text-gray-300,
+  .text-gray-400,
+  .text-gray-500,
+  .text-gray-600,
+  .text-gray-700,
+  .text-gray-800,
+  .text-gray-900,
+  .text-clinic-text,
+  .text-clinic-text-muted,
+  .text-clinic-accent,
+  .text-red-400,
+  .text-red-500,
+  .text-red-600,
+  .text-amber-400,
+  .text-amber-500,
+  .text-amber-600,
+  .text-pink-400,
+  .text-pink-500,
+  .text-cyan-400,
+  .text-cyan-500,
+  .text-emerald-400,
+  .text-emerald-500,
+  .text-emerald-600 {
+    color: #000000 !important;
   }
 }
 
