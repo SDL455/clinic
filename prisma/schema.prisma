@@ -11,6 +11,21 @@ datasource db {
 }
 
 // =========================================
+// CLINIC SETTINGS
+// =========================================
+
+model ClinicSettings {
+  id        Int      @id @default(autoincrement())
+  name      String   @default("ຄລີນິກ ສຸຂະພາບດີ")
+  subtitle  String?  @default("ຜູ້ບໍລິການ")
+  logo      String?  // Path to logo image
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("clinic_settings")
+}
+
+// =========================================
 // USER & AUTHENTICATION
 // =========================================
 
@@ -43,7 +58,11 @@ model Customer {
   firstName String   @map("first_name")
   lastName  String   @map("last_name")
   phone     String   @unique
-  address   String?  @db.Text
+  age       Int?     // ອາຍຸ
+  province  String?  // ແຂວງ
+  district  String?  // ເມືອງ
+  village   String?  // ບ້ານ
+  image     String?  // ຮູບພາບ
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

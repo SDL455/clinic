@@ -3,11 +3,36 @@ import type { MenuItem } from "~/types";
 
 const { user, logout, isAdmin } = useAuth();
 const route = useRoute();
+const { fetchSettings, name: clinicName, subtitle: clinicSubtitle, logo: clinicLogo } = useClinicSettings();
+
+// Fetch clinic settings on load
+onMounted(() => {
+  fetchSettings();
+});
 
 // Drawer state
 const isDrawerExpanded = ref(true); // For desktop: expanded (with text) or collapsed (icons only)
 const isDrawerOpen = ref(false); // For mobile: open or closed
 const isMobile = ref(false);
+
+// Logout confirmation dialog
+const showLogoutDialog = ref(false);
+
+// Handle logout confirmation
+const handleLogout = () => {
+  showLogoutDialog.value = true;
+};
+
+// Confirm logout
+const confirmLogout = () => {
+  showLogoutDialog.value = false;
+  logout();
+};
+
+// Cancel logout
+const cancelLogout = () => {
+  showLogoutDialog.value = false;
+};
 
 // Menu items
 const menuItems = computed<MenuItem[]>(() => [
@@ -21,6 +46,7 @@ const menuItems = computed<MenuItem[]>(() => [
   { label: "ປະຫວັດການຂາຍ", icon: "lucide:file-text", to: "/sales" },
   { label: "ລາຍງານ", icon: "lucide:bar-chart-2", to: "/reports", adminOnly: true },
   { label: "ຜູ້ໃຊ້", icon: "lucide:user-cog", to: "/users", adminOnly: true },
+  { label: "ຕັ້ງຄ່າຄລີນິກ", icon: "lucide:settings", to: "/settings", adminOnly: true },
 ]);
 
 // Filter menu based on role
@@ -100,16 +126,22 @@ onUnmounted(() => {
           :class="isDrawerExpanded || isMobile ? 'gap-3' : 'justify-center'"
         >
           <div
-            class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0"
+            class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0 overflow-hidden"
           >
-            <Icon name="lucide:heart-pulse" class="w-7 h-7 text-white" />
+            <img 
+              v-if="clinicLogo" 
+              :src="clinicLogo" 
+              alt="Clinic Logo" 
+              class="w-full h-full object-cover"
+            />
+            <Icon v-else name="lucide:heart-pulse" class="w-7 h-7 text-white" />
           </div>
           <div 
             v-if="isDrawerExpanded || isMobile"
             class="overflow-hidden transition-all duration-300"
           >
-            <h1 class="font-bold text-white text-lg whitespace-nowrap">ຄລີນິກ ສຸຂະພາບດີ</h1>
-            <p class="text-xs text-white/70 whitespace-nowrap">ຜູ້ບໍລິການ</p>
+            <h1 class="font-bold text-white text-lg whitespace-nowrap">{{ clinicName }}</h1>
+            <p class="text-xs text-white/70 whitespace-nowrap">{{ clinicSubtitle }}</p>
           </div>
         </div>
       </div>
@@ -168,7 +200,7 @@ onUnmounted(() => {
           </div>
         </div>
         <button
-          @click="logout"
+          @click="handleLogout"
           class="w-full btn bg-red-50 text-red-500 hover:bg-red-100 border-0 text-sm"
           :class="isDrawerExpanded || isMobile ? '' : 'px-2'"
         >
@@ -241,5 +273,17 @@ onUnmounted(() => {
     <div class="no-print">
       <NotificationContainer />
     </div>
+
+    <!-- Logout Confirmation Dialog -->
+    <ConfirmDialog
+      :show="showLogoutDialog"
+      message="ທ່ານຕ້ອງການອອກລະບົບແທ້ບໍ່?"
+      subtitle="ກົດປຸ່ມ 'OK' ເພື່ອຢືນຢັນການອອກລະບົບ"
+      confirm-text="OK"
+      cancel-text="Cancel"
+      type="warning"
+      @confirm="confirmLogout"
+      @cancel="cancelLogout"
+    />
   </div>
 </template>

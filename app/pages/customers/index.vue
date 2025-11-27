@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Customer } from "~/types";
+import { provinces, getDistrictsByProvince, getProvinceNames } from "~/utils/provinces";
 
 definePageMeta({
   middleware: "auth",
@@ -21,7 +22,38 @@ const form = reactive({
   firstName: "",
   lastName: "",
   phone: "",
-  address: "",
+  age: "",
+  province: "",
+  district: "",
+  village: "",
+});
+
+// Form validation errors
+const errors = reactive({
+  firstName: "",
+  lastName: "",
+  phone: "",
+  age: "",
+  province: "",
+  district: "",
+  village: "",
+});
+
+// File upload
+const fileInput = ref<HTMLInputElement | null>(null);
+const selectedFile = ref<File | null>(null);
+const previewUrl = ref<string | null>(null);
+
+// Province and district data
+const availableProvinces = getProvinceNames();
+const availableDistricts = computed(() => {
+  if (!form.province) return [];
+  return getDistrictsByProvince(form.province);
+});
+
+// Watch province change to reset district
+watch(() => form.province, () => {
+  form.district = "";
 });
 
 // Fetch customers
@@ -71,17 +103,55 @@ const checkPhone = async () => {
   }
 };
 
+// Handle file selection
+const handleFileSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    const file = target.files[0];
+    if (!file.type.startsWith("image/")) {
+      error("ກະລຸນາເລືອກໄຟລ໌ຮູບພາບ");
+      return;
+    }
+    selectedFile.value = file;
+    previewUrl.value = URL.createObjectURL(file);
+  }
+};
+
+// Remove selected file
+const removeFile = () => {
+  selectedFile.value = null;
+  previewUrl.value = null;
+  if (fileInput.value) {
+    fileInput.value.value = "";
+  }
+};
+
 // Open new modal
 const openNewModal = () => {
   isEditing.value = false;
   editingCustomer.value = null;
   phoneExists.value = false;
   existingCustomer.value = null;
+  selectedFile.value = null;
+  previewUrl.value = null;
   Object.assign(form, {
     firstName: "",
     lastName: "",
     phone: "",
-    address: "",
+    age: "",
+    province: "",
+    district: "",
+    village: "",
+  });
+  // Reset errors
+  Object.assign(errors, {
+    firstName: "",
+    lastName: "",
+    phone: "",
+    age: "",
+    province: "",
+    district: "",
+    village: "",
   });
   showModal.value = true;
 };
@@ -92,19 +162,102 @@ const openEditModal = (customer: Customer) => {
   editingCustomer.value = customer;
   phoneExists.value = false;
   existingCustomer.value = null;
+  selectedFile.value = null;
+  previewUrl.value = customer.image || null;
   Object.assign(form, {
     firstName: customer.firstName,
     lastName: customer.lastName,
     phone: customer.phone,
-    address: customer.address || "",
+    age: (customer as any).age?.toString() || "",
+    province: (customer as any).province || "",
+    district: (customer as any).district || "",
+    village: (customer as any).village || "",
+  });
+  // Reset errors
+  Object.assign(errors, {
+    firstName: "",
+    lastName: "",
+    phone: "",
+    age: "",
+    province: "",
+    district: "",
+    village: "",
   });
   showModal.value = true;
 };
 
+// Validate form
+const validateForm = (): boolean => {
+  let isValid = true;
+  
+  // Reset errors
+  errors.firstName = "";
+  errors.lastName = "";
+  errors.phone = "";
+  errors.age = "";
+  errors.province = "";
+  errors.district = "";
+  errors.village = "";
+
+  // Validate firstName
+  if (!form.firstName.trim()) {
+    errors.firstName = "ກະລຸນາປ້ອນຊື່";
+    isValid = false;
+  }
+
+  // Validate lastName
+  if (!form.lastName.trim()) {
+    errors.lastName = "ກະລຸນາປ້ອນນາມສະກຸນ";
+    isValid = false;
+  }
+
+  // Validate phone
+  if (!form.phone.trim()) {
+    errors.phone = "ກະລຸນາປ້ອນເບີໂທ";
+    isValid = false;
+  } else if (!/^[0-9]{8,11}$/.test(form.phone.replace(/\s/g, ""))) {
+    errors.phone = "ເບີໂທຕ້ອງມີ 8-11 ຕົວເລກ";
+    isValid = false;
+  }
+
+  // Validate age
+  if (!form.age) {
+    errors.age = "ກະລຸນາປ້ອນອາຍຸ";
+    isValid = false;
+  } else {
+    const ageNum = parseInt(form.age, 10);
+    if (isNaN(ageNum) || ageNum < 0 || ageNum > 150) {
+      errors.age = "ອາຍຸຕ້ອງລະຫວ່າງ 0-150 ປີ";
+      isValid = false;
+    }
+  }
+
+  // Validate province
+  if (!form.province) {
+    errors.province = "ກະລຸນາເລືອກແຂວງ";
+    isValid = false;
+  }
+
+  // Validate district
+  if (!form.district) {
+    errors.district = "ກະລຸນາເລືອກເມືອງ";
+    isValid = false;
+  }
+
+  // Validate village
+  if (!form.village.trim()) {
+    errors.village = "ກະລຸນາປ້ອນຊື່ບ້ານ";
+    isValid = false;
+  }
+
+  return isValid;
+};
+
 // Save customer
 const saveCustomer = async () => {
-  if (!form.firstName || !form.lastName || !form.phone) {
-    error("ກະລຸນາປ້ອນຂໍ້ມູນທີ່ຈຳເປັນ");
+  // Validate form
+  if (!validateForm()) {
+    error("ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບຖ້ວນ");
     return;
   }
 
@@ -117,10 +270,24 @@ const saveCustomer = async () => {
     const url = isEditing.value ? `/api/customers/${editingCustomer.value?.id}` : "/api/customers";
     const method = isEditing.value ? "PUT" : "POST";
 
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append("firstName", form.firstName.trim());
+    formData.append("lastName", form.lastName.trim());
+    formData.append("phone", form.phone.trim());
+    formData.append("age", form.age);
+    formData.append("province", form.province);
+    formData.append("district", form.district);
+    formData.append("village", form.village.trim());
+    
+    if (selectedFile.value) {
+      formData.append("image", selectedFile.value);
+    }
+
     await $fetch(url, {
       method,
       headers: getAuthHeaders(),
-      body: form,
+      body: formData,
     });
 
     success(isEditing.value ? "ອັບເດດລູກຄ້າສຳເລັດ" : "ເພີ່ມລູກຄ້າສຳເລັດ");
@@ -211,8 +378,14 @@ onMounted(() => {
                   :to="`/customers/${customer.id}`"
                   class="flex items-center gap-3 hover:text-clinic-accent"
                 >
-                  <div class="w-10 h-10 rounded-full bg-clinic-accent/20 flex items-center justify-center">
-                    <Icon name="lucide:user" class="w-5 h-5 text-clinic-accent" />
+                  <div class="w-10 h-10 rounded-full bg-clinic-accent/20 flex items-center justify-center overflow-hidden">
+                    <img
+                      v-if="(customer as any).image"
+                      :src="(customer as any).image"
+                      :alt="`${customer.firstName} ${customer.lastName}`"
+                      class="w-full h-full object-cover"
+                    />
+                    <Icon v-else name="lucide:user" class="w-5 h-5 text-clinic-accent" />
                   </div>
                   <span class="font-medium text-white">
                     {{ customer.firstName }} {{ customer.lastName }}
@@ -225,7 +398,12 @@ onMounted(() => {
                 </a>
               </td>
               <td class="text-gray-400 max-w-xs truncate">
-                {{ customer.address || "-" }}
+                <div v-if="(customer as any).province || (customer as any).district || (customer as any).village">
+                  <span v-if="(customer as any).village">{{ (customer as any).village }}, </span>
+                  <span v-if="(customer as any).district">{{ (customer as any).district }}, </span>
+                  <span v-if="(customer as any).province">{{ (customer as any).province }}</span>
+                </div>
+                <span v-else>-</span>
               </td>
               <td class="text-center">
                 <span class="badge badge-info">
@@ -271,14 +449,86 @@ onMounted(() => {
           </div>
         </div>
 
+        <!-- Image Upload -->
+        <div>
+          <label class="input-label">ຮູບພາບ</label>
+          <div class="flex items-center gap-4">
+            <div class="relative">
+              <div
+                class="w-24 h-24 rounded-xl bg-clinic-muted border-2 border-dashed border-clinic-border 
+                       flex items-center justify-center overflow-hidden cursor-pointer
+                       hover:border-clinic-accent transition-colors"
+                @click="fileInput?.click()"
+              >
+                <img
+                  v-if="previewUrl"
+                  :src="previewUrl"
+                  alt="Preview"
+                  class="w-full h-full object-cover"
+                />
+                <Icon
+                  v-else
+                  name="lucide:image"
+                  class="w-8 h-8 text-gray-400"
+                />
+              </div>
+              <input
+                ref="fileInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleFileSelect"
+              />
+              <button
+                v-if="previewUrl"
+                type="button"
+                @click="removeFile"
+                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full 
+                       flex items-center justify-center text-white text-xs"
+              >
+                <Icon name="lucide:x" class="w-4 h-4" />
+              </button>
+            </div>
+            <div class="flex-1">
+              <button
+                type="button"
+                @click="fileInput?.click()"
+                class="btn btn-secondary btn-sm"
+              >
+                <Icon name="lucide:upload" class="w-4 h-4" />
+                ເລືອກຮູບພາບ
+              </button>
+              <p class="text-xs text-gray-400 mt-2">
+                PNG, JPG, GIF (ສູງສຸດ 5MB)
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="input-label">ຊື່ *</label>
-            <input v-model="form.firstName" type="text" class="input" required />
+            <input 
+              v-model="form.firstName" 
+              type="text" 
+              class="input"
+              :class="{ 'input-error': errors.firstName }"
+            />
+            <p v-if="errors.firstName" class="text-red-400 text-xs mt-1">
+              {{ errors.firstName }}
+            </p>
           </div>
           <div>
             <label class="input-label">ນາມສະກຸນ *</label>
-            <input v-model="form.lastName" type="text" class="input" required />
+            <input 
+              v-model="form.lastName" 
+              type="text" 
+              class="input"
+              :class="{ 'input-error': errors.lastName }"
+            />
+            <p v-if="errors.lastName" class="text-red-400 text-xs mt-1">
+              {{ errors.lastName }}
+            </p>
           </div>
         </div>
 
@@ -288,21 +538,83 @@ onMounted(() => {
             v-model="form.phone"
             type="tel"
             class="input"
-            :class="{ 'input-error': phoneExists }"
-            required
+            :class="{ 'input-error': errors.phone || phoneExists }"
           />
+          <p v-if="errors.phone" class="text-red-400 text-xs mt-1">
+            {{ errors.phone }}
+          </p>
         </div>
 
         <div>
-          <label class="input-label">ທີ່ຢູ່</label>
-          <textarea v-model="form.address" class="input" rows="2" />
+          <label class="input-label">ແຂວງ *</label>
+          <select 
+            v-model="form.province" 
+            class="select"
+            :class="{ 'input-error': errors.province }"
+          >
+            <option value="">-- ເລືອກແຂວງ --</option>
+            <option v-for="province in availableProvinces" :key="province" :value="province">
+              {{ province }}
+            </option>
+          </select>
+          <p v-if="errors.province" class="text-red-400 text-xs mt-1">
+            {{ errors.province }}
+          </p>
+        </div>
+
+        <div>
+          <label class="input-label">ເມືອງ *</label>
+          <select 
+            v-model="form.district" 
+            class="select"
+            :class="{ 'input-error': errors.district }"
+            :disabled="!form.province"
+          >
+            <option value="">-- ເລືອກເມືອງ --</option>
+            <option v-for="district in availableDistricts" :key="district" :value="district">
+              {{ district }}
+            </option>
+          </select>
+          <p v-if="errors.district" class="text-red-400 text-xs mt-1">
+            {{ errors.district }}
+          </p>
+        </div>
+
+        <div>
+          <label class="input-label">ບ້ານ *</label>
+          <input 
+            v-model="form.village" 
+            type="text" 
+            class="input" 
+            placeholder="ປ້ອນຊື່ບ້ານ"
+            :class="{ 'input-error': errors.village }"
+          />
+          <p v-if="errors.village" class="text-red-400 text-xs mt-1">
+            {{ errors.village }}
+          </p>
+        </div>
+
+        <div>
+          <label class="input-label">ອາຍຸ *</label>
+          <input 
+            v-model="form.age" 
+            type="number" 
+            class="input" 
+            placeholder="ປ້ອນອາຍຸ" 
+            min="0" 
+            max="150"
+            :class="{ 'input-error': errors.age }"
+          />
+          <p v-if="errors.age" class="text-red-400 text-xs mt-1">
+            {{ errors.age }}
+          </p>
         </div>
 
         <div class="flex gap-3 pt-4">
           <button type="button" @click="showModal = false" class="btn btn-secondary flex-1">
             ຍົກເລີກ
           </button>
-          <button type="submit" class="btn btn-primary flex-1" :disabled="phoneExists && !isEditing">
+          <button type="submit" class="btn btn-primary flex-1">
             {{ isEditing ? "ບັນທຶກ" : "ເພີ່ມ" }}
           </button>
         </div>
