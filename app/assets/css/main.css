@@ -1,0 +1,412 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ======================================= */
+/* Custom Base Styles */
+/* ======================================= */
+
+@layer base {
+  * {
+    font-family: "Noto Sans Lao", sans-serif;
+  }
+
+  body {
+    @apply bg-clinic-bg text-clinic-text antialiased;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
+}
+
+/* ======================================= */
+/* Component Classes */
+/* ======================================= */
+
+@layer components {
+  /* Card Styles */
+  .card {
+    @apply bg-clinic-surface rounded-2xl border border-clinic-border shadow-lg;
+  }
+
+  .card-header {
+    @apply px-6 py-4 border-b border-clinic-border;
+  }
+
+  .card-body {
+    @apply p-6;
+  }
+
+  /* Button Styles */
+  .btn {
+    @apply px-4 py-2.5 rounded-xl font-medium transition-all duration-200
+           inline-flex items-center justify-center gap-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-emerald-500 to-cyan-500 text-white
+           hover:from-emerald-600 hover:to-cyan-600
+           shadow-lg shadow-emerald-500/25;
+  }
+
+  .btn-secondary {
+    @apply bg-clinic-muted border border-clinic-border text-clinic-text
+           hover:bg-gray-200 hover:border-gray-300;
+  }
+
+  .btn-danger {
+    @apply bg-gradient-to-r from-red-500 to-rose-500 text-white
+           hover:from-red-600 hover:to-rose-600
+           shadow-lg shadow-red-500/25;
+  }
+
+  .btn-warning {
+    @apply bg-gradient-to-r from-amber-500 to-orange-500 text-white
+           hover:from-amber-600 hover:to-orange-600
+           shadow-lg shadow-amber-500/25;
+  }
+
+  .btn-purple {
+    @apply bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white
+           hover:from-purple-600 hover:to-fuchsia-600
+           shadow-lg shadow-purple-500/25;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  /* Input Styles */
+  .input {
+    @apply w-full px-4 py-2.5 rounded-xl
+           bg-clinic-surface border border-clinic-border
+           text-clinic-text placeholder-gray-400
+           focus:outline-none focus:border-clinic-accent focus:ring-2 focus:ring-clinic-accent/20
+           transition-all duration-200;
+  }
+
+  .input-label {
+    @apply block text-sm font-medium text-clinic-text mb-1.5;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:border-red-500 focus:ring-red-500/20;
+  }
+
+  /* Select Styles */
+  .select {
+    @apply input appearance-none cursor-pointer pr-10;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.5em 1.5em;
+  }
+
+  /* Table Styles */
+  .table-container {
+    @apply overflow-x-auto rounded-xl border border-clinic-border bg-clinic-surface;
+  }
+
+  .table {
+    @apply w-full text-left;
+  }
+
+  .table th {
+    @apply px-4 py-3 bg-clinic-muted text-clinic-text-muted font-semibold text-sm uppercase tracking-wider;
+  }
+
+  .table td {
+    @apply px-4 py-3 border-t border-clinic-border text-clinic-text;
+  }
+
+  .table tbody tr {
+    @apply hover:bg-clinic-muted/50 transition-colors;
+  }
+
+  /* Badge Styles */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-success {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .badge-warning {
+    @apply bg-amber-100 text-amber-700;
+  }
+
+  .badge-danger {
+    @apply bg-red-100 text-red-700;
+  }
+
+  .badge-info {
+    @apply bg-cyan-100 text-cyan-700;
+  }
+
+  .badge-purple {
+    @apply bg-purple-100 text-purple-700;
+  }
+
+  .badge-pink {
+    @apply bg-pink-100 text-pink-700;
+  }
+
+  .badge-orange {
+    @apply bg-orange-100 text-orange-700;
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-50
+           flex items-center justify-center p-4;
+  }
+
+  .modal-content {
+    @apply bg-clinic-surface rounded-2xl border border-clinic-border
+           shadow-2xl max-w-lg w-full max-h-[90vh] overflow-auto
+           animate-slide-up;
+  }
+
+  /* Drawer Styles - Light theme with gradient */
+  .drawer {
+    @apply fixed top-0 left-0 h-full bg-clinic-surface border-r border-clinic-border
+           z-40 flex flex-col;
+  }
+
+  /* Sidebar Header with Gradient */
+  .sidebar-header {
+    @apply bg-gradient-to-r from-clinic-sidebar-from via-clinic-sidebar-via to-clinic-sidebar-to
+           text-white;
+  }
+
+  /* Menu Item Styles */
+  .menu-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl
+           text-clinic-text-muted hover:text-clinic-text hover:bg-clinic-muted
+           transition-all duration-200 cursor-pointer;
+  }
+
+  .menu-item-active {
+    @apply text-clinic-purple bg-purple-50
+           border-l-4 border-clinic-purple;
+  }
+
+  /* Menu item collapsed state */
+  .menu-item.justify-center {
+    @apply px-3;
+  }
+
+  .menu-item.justify-center.menu-item-active {
+    @apply border-l-0 border-b-4;
+  }
+
+  /* Stat Card */
+  .stat-card {
+    @apply card p-6 relative overflow-hidden;
+  }
+
+  .stat-card::before {
+    content: "";
+    @apply absolute top-0 right-0 w-32 h-32 
+           bg-gradient-to-br from-clinic-accent/10 to-transparent
+           rounded-full -translate-y-1/2 translate-x-1/2;
+  }
+
+  /* Alert Styles */
+  .alert {
+    @apply p-4 rounded-2xl flex items-start gap-3;
+  }
+
+  .alert-warning {
+    @apply bg-gradient-to-r from-orange-500 to-amber-500 text-white;
+  }
+
+  .alert-danger {
+    @apply bg-gradient-to-r from-red-500 to-rose-500 text-white;
+  }
+
+  .alert-success {
+    @apply bg-gradient-to-r from-emerald-500 to-green-500 text-white;
+  }
+
+  .alert-info {
+    @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-white;
+  }
+
+  /* Category/Filter Button Styles */
+  .filter-btn {
+    @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+           border-2 inline-flex items-center gap-2;
+  }
+
+  .filter-btn-all {
+    @apply bg-purple-500 text-white border-purple-500;
+  }
+
+  .filter-btn-active {
+    @apply bg-opacity-100 text-white;
+  }
+
+  .filter-btn-inactive {
+    @apply bg-transparent hover:bg-opacity-10;
+  }
+
+  /* Product Card Styles */
+  .product-card {
+    @apply bg-clinic-surface rounded-2xl border border-clinic-border p-4
+           hover:shadow-xl hover:border-clinic-accent/30 transition-all duration-300;
+  }
+
+  /* Icon Button */
+  .icon-btn {
+    @apply p-2 rounded-xl transition-all duration-200
+           hover:scale-105 active:scale-95;
+  }
+
+  .icon-btn-success {
+    @apply bg-emerald-500 text-white hover:bg-emerald-600;
+  }
+
+  .icon-btn-info {
+    @apply bg-cyan-500 text-white hover:bg-cyan-600;
+  }
+
+  .icon-btn-danger {
+    @apply bg-red-500 text-white hover:bg-red-600;
+  }
+
+  /* Stock Badge */
+  .stock-badge {
+    @apply px-2 py-1 rounded-lg text-xs font-bold;
+  }
+
+  .stock-badge-low {
+    @apply bg-red-100 text-red-600;
+  }
+
+  .stock-badge-ok {
+    @apply bg-emerald-100 text-emerald-600;
+  }
+}
+
+/* ======================================= */
+/* Print Styles */
+/* ======================================= */
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  /* Reset main content margins for print */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Card styles for print */
+  .card {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    max-width: 100% !important;
+  }
+
+  /* Text colors for print */
+  .text-white,
+  .text-clinic-text,
+  .text-clinic-accent {
+    color: black !important;
+  }
+
+  .text-gray-400,
+  .text-gray-500,
+  .text-clinic-text-muted {
+    color: #4b5563 !important;
+  }
+
+  /* Border colors for print */
+  .border-clinic-border {
+    border-color: #e5e7eb !important;
+  }
+
+  /* Badge styles for print */
+  .badge {
+    border: 1px solid currentColor !important;
+  }
+
+  .badge-success {
+    background: #d1fae5 !important;
+    color: #047857 !important;
+  }
+
+  .badge-warning {
+    background: #fef3c7 !important;
+    color: #b45309 !important;
+  }
+
+  .badge-info {
+    background: #cffafe !important;
+    color: #0e7490 !important;
+  }
+
+  /* Hide backgrounds */
+  .bg-clinic-dark,
+  .bg-clinic-surface,
+  .bg-clinic-accent\/20,
+  .bg-pink-500\/20 {
+    background: transparent !important;
+  }
+
+  /* Icon containers for print */
+  .rounded-xl,
+  .rounded-lg,
+  .rounded-full {
+    border: 1px solid #e5e7eb !important;
+  }
+
+  /* Page settings */
+  @page {
+    size: 80mm auto;
+    margin: 5mm;
+  }
+}
