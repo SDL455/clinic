@@ -257,7 +257,7 @@ onUnmounted(() => {
               class="btn bg-gradient-to-r from-clinic-pink to-fuchsia-500 text-white btn-sm shadow-lg shadow-pink-500/25"
             >
               <Icon name="lucide:plus" class="w-4 h-4" />
-              <span class="hidden sm:inline">ເພີ່ມສິນຄ້າ</span>
+              <span class="hidden sm:inline">ຂາຍສິນຄ້າ</span>
             </NuxtLink>
           </div>
         </div>

@@ -5,10 +5,27 @@ export default defineEventHandler(async (event) => {
   await requireAuth(event);
 
   const now = new Date();
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startOfWeek = new Date(startOfDay);
-  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  
+  // Calculate date ranges
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfToday = new Date(startOfToday);
+  endOfToday.setHours(23, 59, 59, 999);
+  
+  // Start of this week (Sunday)
+  const startOfThisWeek = new Date(startOfToday);
+  startOfThisWeek.setDate(startOfThisWeek.getDate() - startOfThisWeek.getDay());
+  
+  // End of this week (Saturday)
+  const endOfThisWeek = new Date(startOfThisWeek);
+  endOfThisWeek.setDate(endOfThisWeek.getDate() + 6);
+  endOfThisWeek.setHours(23, 59, 59, 999);
+  
+  // Start of this month
+  const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  
+  // End of this month
+  const endOfThisMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  endOfThisMonth.setHours(23, 59, 59, 999);
 
   // Get all products for low stock check (need to compare stock with minStock)
   const allProducts = await prisma.product.findMany({
@@ -30,39 +47,44 @@ export default defineEventHandler(async (event) => {
     // Total sales count
     prisma.sale.count(),
 
-    // Total revenue
+    // Total revenue (all statuses)
     prisma.sale.aggregate({
       _sum: { total: true },
-      where: { status: "PAID" },
     }),
 
     // Total customers
     prisma.customer.count(),
 
-    // Today's revenue
+    // Today's revenue - calculate for each day separately
     prisma.sale.aggregate({
       _sum: { total: true },
       where: {
-        status: "PAID",
-        createdAt: { gte: startOfDay },
+        createdAt: {
+          gte: startOfToday,
+          lte: endOfToday,
+        },
       },
     }),
 
-    // This week's revenue
+    // This week's revenue - calculate for each week separately
     prisma.sale.aggregate({
       _sum: { total: true },
       where: {
-        status: "PAID",
-        createdAt: { gte: startOfWeek },
+        createdAt: {
+          gte: startOfThisWeek,
+          lte: endOfThisWeek,
+        },
       },
     }),
 
-    // This month's revenue
+    // This month's revenue - calculate for each month separately
     prisma.sale.aggregate({
       _sum: { total: true },
       where: {
-        status: "PAID",
-        createdAt: { gte: startOfMonth },
+        createdAt: {
+          gte: startOfThisMonth,
+          lte: endOfThisMonth,
+        },
       },
     }),
   ]);

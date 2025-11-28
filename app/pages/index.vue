@@ -15,20 +15,33 @@ const isLoading = ref(true);
 const fetchDashboard = async () => {
   isLoading.value = true;
   try {
-    const [statsRes, salesRes] = await Promise.all([
+    const promises = [
       $fetch<{ success: boolean; data: DashboardStats }>("/api/dashboard/stats", {
         headers: getAuthHeaders(),
       }),
-      $fetch<{ success: boolean; data: Sale[] }>("/api/sales?limit=5", {
-        headers: getAuthHeaders(),
-      }),
-    ]);
+    ];
+
+    // Only fetch recent sales for admin
+    if (isAdmin.value) {
+      promises.push(
+        $fetch<{ success: boolean; data: Sale[] }>("/api/sales?limit=5", {
+          headers: getAuthHeaders(),
+        })
+      );
+    }
+
+    const results = await Promise.all(promises);
+    const statsRes = results[0];
 
     if (statsRes.success) {
       stats.value = statsRes.data;
     }
-    if (salesRes.success) {
-      recentSales.value = salesRes.data || [];
+
+    if (isAdmin.value && results[1]) {
+      const salesRes = results[1] as { success: boolean; data: Sale[] };
+      if (salesRes.success) {
+        recentSales.value = salesRes.data || [];
+      }
     }
   } catch (error) {
     console.error("Failed to fetch dashboard:", error);
@@ -97,12 +110,14 @@ onMounted(() => {
       <!-- Stats Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
+          v-if="isAdmin"
           title="ຍອດຂາຍມື້ນີ້"
           :value="formatCurrency(stats?.todayRevenue || 0)"
           icon="lucide:calendar"
           color="emerald"
         />
         <StatCard
+          v-if="isAdmin"
           title="ຍອດຂາຍອາທິດນີ້"
           :value="formatCurrency(stats?.weekRevenue || 0)"
           icon="lucide:calendar-days"
@@ -144,8 +159,8 @@ onMounted(() => {
         />
       </div>
 
-      <!-- Recent Sales -->
-      <div class="card">
+      <!-- Recent Sales (Admin Only) -->
+      <div v-if="isAdmin" class="card">
         <div class="card-header flex items-center justify-between">
           <h3 class="font-semibold text-white">ການຂາຍຫຼ້າສຸດ</h3>
           <NuxtLink to="/sales" class="text-sm text-clinic-accent hover:underline">

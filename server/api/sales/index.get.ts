@@ -2,7 +2,7 @@ import { prisma } from "../../utils/prisma";
 import { requireAuth } from "../../utils/auth";
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event);
+  const user = await requireAuth(event);
 
   const query = getQuery(event);
   const page = parseInt(query.page as string) || 1;
@@ -13,6 +13,15 @@ export default defineEventHandler(async (event) => {
   const skip = (page - 1) * limit;
 
   const where: Parameters<typeof prisma.sale.findMany>[0]["where"] = {};
+
+  // For employees, only show sales from the last 24 hours
+  if (user.role === "EMPLOYEE") {
+    const twentyFourHoursAgo = new Date();
+    twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+    where.createdAt = {
+      gte: twentyFourHoursAgo,
+    };
+  }
 
   if (search) {
     where.OR = [
