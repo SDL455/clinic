@@ -10,6 +10,11 @@ export default defineNuxtConfig({
     preset: "static"
   },
 
+  devServer: {
+    port: 3000,
+    host: "localhost"
+  },
+
   app: {
     baseURL: '/clinic/',          
     buildAssetsDir: 'assets/',    
@@ -35,5 +40,16 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     jwtSecret: process.env.JWT_SECRET || "your-secret-key",
+  },
+
+  vite: {
+    server: {
+      hmr: {
+        port: 24679,
+        clientPort: 24679,
+        protocol: 'ws',
+        host: 'localhost'
+      }
+    }
   }
 })
