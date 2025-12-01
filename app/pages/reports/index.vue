@@ -22,7 +22,9 @@ const paymentStatus = ref("ALL");
 
 // Date filters
 const startDate = ref(
-  new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split("T")[0]
+  new Date(new Date().setDate(new Date().getDate() - 30))
+    .toISOString()
+    .split("T")[0]
 );
 const endDate = ref(new Date().toISOString().split("T")[0]);
 
@@ -67,10 +69,13 @@ const formatPeriod = (periodStr: string) => {
   }
   if (period.value === "monthly") {
     const [year, month] = periodStr.split("-");
-    return new Date(Number(year), Number(month) - 1).toLocaleDateString("lo-LA", {
-      month: "long",
-      year: "numeric",
-    });
+    return new Date(Number(year), Number(month) - 1).toLocaleDateString(
+      "lo-LA",
+      {
+        month: "long",
+        year: "numeric",
+      }
+    );
   }
   if (period.value === "weekly") {
     return periodStr.replace("-W", " ອາທິດທີ ");
@@ -140,7 +145,10 @@ onMounted(() => {
 
     <!-- Loading -->
     <div v-if="isLoading" class="flex items-center justify-center h-64">
-      <Icon name="lucide:loader-2" class="w-10 h-10 animate-spin text-clinic-accent" />
+      <Icon
+        name="lucide:loader-2"
+        class="w-10 h-10 animate-spin text-clinic-accent"
+      />
     </div>
 
     <template v-else-if="reportData">
@@ -170,8 +178,14 @@ onMounted(() => {
       <div class="card p-6 mb-6">
         <h3 class="font-semibold text-white mb-6">ກຣາຟລາຍຮັບ</h3>
 
-        <div v-if="reportData.report.length === 0" class="text-center py-12 text-gray-400">
-          <Icon name="lucide:bar-chart-2" class="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div
+          v-if="reportData.report.length === 0"
+          class="text-center py-12 text-gray-400"
+        >
+          <Icon
+            name="lucide:bar-chart-2"
+            class="w-12 h-12 mx-auto mb-3 opacity-50"
+          />
           <p>ບໍ່ມີຂໍ້ມູນໃນຊ່ວງນີ້</p>
         </div>
 
@@ -230,7 +244,11 @@ onMounted(() => {
                 </td>
                 <td class="text-right text-gray-400">{{ item.count }}</td>
                 <td class="text-right text-gray-400">
-                  {{ formatCurrency(item.count > 0 ? item.revenue / item.count : 0) }}
+                  {{
+                    formatCurrency(
+                      item.count > 0 ? item.revenue / item.count : 0
+                    )
+                  }}
                 </td>
               </tr>
             </tbody>
