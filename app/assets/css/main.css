@@ -3,61 +3,83 @@
 @tailwind utilities;
 
 /* ======================================= */
-/* Custom Base Styles */
+/* Custom Base Styles - Clean & Modern */
 /* ======================================= */
 
 @layer base {
   * {
-    font-family: "Noto Sans Lao", sans-serif;
+    font-family: "Noto Sans Lao", "Inter", sans-serif;
   }
 
   html {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   body {
     @apply bg-clinic-bg antialiased;
-    color: #000000;
-    font-size: 14px;
+    color: theme("colors.clinic.text");
   }
 
-  /* Override all text colors to black */
-  h1, h2, h3, h4, h5, h6, p, span, div, a, label, input, textarea, select, button, td, th, li, small, strong, em, b, i {
-    color: #000000 !important;
+  /* Headings with proper weight and color */
+  h1 {
+    @apply text-3xl font-bold;
+    color: theme("colors.clinic.text");
   }
 
-  /* All text elements set to 14px */
-  h1, h2, h3, h4, h5, h6, p, span, div, a, label, input, textarea, select, button, td, th, li, small, strong, em, b, i {
-    font-size: 14px !important;
+  h2 {
+    @apply text-2xl font-bold;
+    color: theme("colors.clinic.text");
   }
 
-  /* Custom Scrollbar */
+  h3 {
+    @apply text-xl font-semibold;
+    color: theme("colors.clinic.text");
+  }
+
+  h4 {
+    @apply text-lg font-semibold;
+    color: theme("colors.clinic.text");
+  }
+
+  h5,
+  h6 {
+    @apply text-base font-semibold;
+    color: theme("colors.clinic.text");
+  }
+
+  /* Links */
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  /* Custom Scrollbar - Sky Blue Theme */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-gray-100;
+    @apply bg-gray-50 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
+    @apply bg-clinic-primary/30 hover:bg-clinic-primary/50 rounded-full;
   }
 }
 
 /* ======================================= */
-/* Component Classes */
+/* Component Classes - Modern & Clean */
 /* ======================================= */
 
 @layer components {
-  /* Card Styles */
+  /* === Card Styles === */
   .card {
-    @apply bg-clinic-surface rounded-2xl border border-clinic-border shadow-lg;
+    @apply bg-clinic-surface rounded-2xl border border-clinic-border shadow-sm;
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 8px 30px rgba(14, 165, 233, 0.08);
   }
 
   .card-header {
@@ -68,80 +90,84 @@
     @apply p-6;
   }
 
-  /* Button Styles */
+  /* === Button Styles - Modern Gradients === */
   .btn {
-    @apply px-4 py-2.5 rounded-xl font-medium transition-all duration-200
+    @apply px-5 py-2.5 rounded-xl font-medium transition-all duration-200
            inline-flex items-center justify-center gap-2
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-emerald-500 to-cyan-500 text-white
-           hover:from-emerald-600 hover:to-cyan-600
-           shadow-lg shadow-emerald-500/25;
+    @apply bg-gradient-to-r from-clinic-primary to-clinic-primary-light text-white
+           hover:from-clinic-primary-dark hover:to-clinic-primary
+           shadow-md hover:shadow-lg;
+    box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.25);
   }
 
   .btn-secondary {
-    @apply bg-clinic-muted border border-clinic-border
-           hover:bg-gray-200 hover:border-gray-300;
-    color: #000000 !important;
+    @apply bg-clinic-muted text-clinic-text border border-clinic-border
+           hover:bg-clinic-surface-hover hover:border-clinic-primary/30;
+  }
+
+  .btn-success {
+    @apply bg-gradient-to-r from-clinic-success to-emerald-500 text-white
+           hover:from-emerald-600 hover:to-emerald-500 shadow-md hover:shadow-lg;
   }
 
   .btn-danger {
-    @apply bg-gradient-to-r from-red-500 to-rose-500 text-white
-           hover:from-red-600 hover:to-rose-600
-           shadow-lg shadow-red-500/25;
+    @apply bg-gradient-to-r from-clinic-error to-red-500 text-white
+           hover:from-red-600 hover:to-red-500 shadow-md hover:shadow-lg;
   }
 
   .btn-warning {
-    @apply bg-gradient-to-r from-amber-500 to-orange-500 text-white
-           hover:from-amber-600 hover:to-orange-600
-           shadow-lg shadow-amber-500/25;
+    @apply bg-gradient-to-r from-clinic-warning to-amber-500 text-white
+           hover:from-amber-600 hover:to-amber-500 shadow-md hover:shadow-lg;
   }
 
   .btn-purple {
-    @apply bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white
-           hover:from-purple-600 hover:to-fuchsia-600
-           shadow-lg shadow-purple-500/25;
+    @apply bg-gradient-to-r from-clinic-secondary to-purple-500 text-white
+           hover:from-purple-600 hover:to-purple-500 shadow-md hover:shadow-lg;
   }
 
   .btn-sm {
-    @apply px-3 py-1.5 text-sm;
+    @apply px-3 py-2 text-sm;
   }
 
   .btn-lg {
-    @apply px-6 py-3 text-lg;
+    @apply px-7 py-3.5 text-lg;
   }
 
-  /* Input Styles */
+  /* === Input Styles - Clean & Minimal === */
   .input {
     @apply w-full px-4 py-2.5 rounded-xl
            bg-clinic-surface border border-clinic-border
-           placeholder-gray-400
-           focus:outline-none focus:border-clinic-accent focus:ring-2 focus:ring-clinic-accent/20
+           text-clinic-text placeholder-clinic-text-light
+           focus:outline-none focus:border-clinic-primary focus:ring-2 focus:ring-clinic-primary/20
            transition-all duration-200;
-    color: #000000 !important;
+  }
+
+  .input:hover {
+    @apply border-clinic-primary/40;
   }
 
   .input-label {
-    @apply block text-sm font-medium mb-1.5;
-    color: #000000 !important;
+    @apply block text-sm font-semibold text-clinic-text mb-2;
   }
 
   .input-error {
-    @apply border-red-500 focus:border-red-500 focus:ring-red-500/20;
+    @apply border-clinic-error focus:border-clinic-error focus:ring-clinic-error/20;
   }
 
-  /* Select Styles */
+  /* === Select Styles === */
   .select {
     @apply input appearance-none cursor-pointer pr-10;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%230ea5e9' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 0.5rem center;
+    background-position: right 0.75rem center;
     background-size: 1.5em 1.5em;
   }
 
-  /* Table Styles */
+  /* === Table Styles - Modern Design === */
   .table-container {
     @apply overflow-x-auto rounded-xl border border-clinic-border bg-clinic-surface;
   }
@@ -151,55 +177,50 @@
   }
 
   .table th {
-    @apply px-4 py-3 bg-clinic-muted font-semibold text-sm uppercase tracking-wider;
-    color: #000000 !important;
+    @apply px-6 py-4 bg-gradient-to-r from-clinic-primary/5 to-clinic-secondary/5
+           font-semibold text-sm text-clinic-text uppercase tracking-wider;
   }
 
   .table td {
-    @apply px-4 py-3 border-t border-clinic-border;
-    color: #000000 !important;
+    @apply px-6 py-4 border-t border-clinic-border text-clinic-text;
   }
 
   .table tbody tr {
-    @apply hover:bg-clinic-muted/50 transition-colors;
+    @apply hover:bg-clinic-primary/5 transition-colors cursor-pointer;
   }
 
-  /* Badge Styles */
+  /* === Badge Styles - Soft Colors === */
   .badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
   }
 
   .badge-success {
-    @apply bg-emerald-100 text-emerald-700;
+    @apply bg-clinic-success-bg text-clinic-success;
   }
 
   .badge-warning {
-    @apply bg-amber-100 text-amber-700;
+    @apply bg-clinic-warning-bg text-clinic-warning;
   }
 
   .badge-danger {
-    @apply bg-red-100 text-red-700;
+    @apply bg-clinic-error-bg text-clinic-error;
   }
 
   .badge-info {
-    @apply bg-cyan-100 text-cyan-700;
+    @apply bg-clinic-info-bg text-clinic-info;
   }
 
   .badge-purple {
-    @apply bg-purple-100 text-purple-700;
+    @apply bg-purple-100 text-clinic-secondary;
   }
 
   .badge-pink {
-    @apply bg-pink-100 text-pink-700;
+    @apply bg-pink-100 text-pink-600;
   }
 
-  .badge-orange {
-    @apply bg-orange-100 text-orange-700;
-  }
-
-  /* Modal Styles */
+  /* === Modal Styles === */
   .modal-overlay {
-    @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-50
+    @apply fixed inset-0 bg-black/30 backdrop-blur-sm z-50
            flex items-center justify-center p-4;
   }
 
@@ -209,29 +230,23 @@
            animate-slide-up;
   }
 
-  /* Drawer Styles - Light theme with gradient */
+  /* === Drawer/Sidebar Styles === */
   .drawer {
     @apply fixed top-0 left-0 h-full bg-clinic-surface border-r border-clinic-border
-           z-40 flex flex-col;
+           z-40 flex flex-col shadow-xl;
   }
 
-  /* Sidebar Header with Gradient */
-  .sidebar-header {
-    @apply bg-gradient-to-r from-clinic-sidebar-from via-clinic-sidebar-via to-clinic-sidebar-to
-           text-white;
-  }
-
-  /* Menu Item Styles */
+  /* === Menu Item Styles - Clean Hover === */
   .menu-item {
     @apply flex items-center gap-3 px-4 py-3 rounded-xl
-           hover:bg-clinic-muted
+           text-clinic-text
+           hover:bg-clinic-primary/5
            transition-all duration-200 cursor-pointer;
-    color: #000000 !important;
   }
 
   .menu-item-active {
-    @apply text-clinic-purple bg-purple-50
-           border-l-4 border-clinic-purple;
+    @apply bg-gradient-to-r from-clinic-primary/10 to-clinic-secondary/10
+           text-clinic-primary border-l-4 border-clinic-primary;
   }
 
   /* Menu item collapsed state */
@@ -243,7 +258,7 @@
     @apply border-l-0 border-b-4;
   }
 
-  /* Stat Card */
+  /* === Stat Card === */
   .stat-card {
     @apply card p-6 relative overflow-hidden;
   }
@@ -251,39 +266,39 @@
   .stat-card::before {
     content: "";
     @apply absolute top-0 right-0 w-32 h-32 
-           bg-gradient-to-br from-clinic-accent/10 to-transparent
+           bg-gradient-to-br from-clinic-primary/10 to-transparent
            rounded-full -translate-y-1/2 translate-x-1/2;
   }
 
-  /* Alert Styles */
+  /* === Alert Styles - Soft Backgrounds === */
   .alert {
-    @apply p-4 rounded-2xl flex items-start gap-3;
+    @apply p-4 rounded-xl flex items-start gap-3 border;
   }
 
   .alert-warning {
-    @apply bg-gradient-to-r from-orange-500 to-amber-500 text-white;
+    @apply bg-clinic-warning-bg border-clinic-warning/30 text-amber-900;
   }
 
   .alert-danger {
-    @apply bg-gradient-to-r from-red-500 to-rose-500 text-white;
+    @apply bg-clinic-error-bg border-clinic-error/30 text-red-900;
   }
 
   .alert-success {
-    @apply bg-gradient-to-r from-emerald-500 to-green-500 text-white;
+    @apply bg-clinic-success-bg border-clinic-success/30 text-emerald-900;
   }
 
   .alert-info {
-    @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-white;
+    @apply bg-clinic-info-bg border-clinic-info/30 text-blue-900;
   }
 
-  /* Category/Filter Button Styles */
+  /* === Filter Buttons === */
   .filter-btn {
     @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
            border-2 inline-flex items-center gap-2;
   }
 
   .filter-btn-all {
-    @apply bg-purple-500 text-white border-purple-500;
+    @apply bg-clinic-secondary text-white border-clinic-secondary;
   }
 
   .filter-btn-active {
@@ -291,82 +306,66 @@
   }
 
   .filter-btn-inactive {
-    @apply bg-transparent hover:bg-opacity-10;
+    @apply bg-transparent text-clinic-text-muted hover:bg-clinic-primary/10 border-clinic-border;
   }
 
-  /* Product Card Styles */
+  /* === Product Card === */
   .product-card {
     @apply bg-clinic-surface rounded-2xl border border-clinic-border p-4
-           hover:shadow-xl hover:border-clinic-accent/30 transition-all duration-300;
+           hover:shadow-lg hover:border-clinic-primary/30 
+           transition-all duration-300 cursor-pointer;
   }
 
-  /* Icon Button */
+  /* === Icon Button === */
   .icon-btn {
-    @apply p-2 rounded-xl transition-all duration-200
+    @apply p-2.5 rounded-xl transition-all duration-200
            hover:scale-105 active:scale-95;
   }
 
   .icon-btn-success {
-    @apply bg-emerald-500 text-white hover:bg-emerald-600;
+    @apply bg-clinic-success text-white hover:bg-clinic-success-light shadow-sm;
   }
 
   .icon-btn-info {
-    @apply bg-cyan-500 text-white hover:bg-cyan-600;
+    @apply bg-clinic-info text-white hover:bg-clinic-info-light shadow-sm;
   }
 
   .icon-btn-danger {
-    @apply bg-red-500 text-white hover:bg-red-600;
+    @apply bg-clinic-error text-white hover:bg-clinic-error-light shadow-sm;
   }
 
-  /* Stock Badge */
+  /* === Stock Badge === */
   .stock-badge {
-    @apply px-2 py-1 rounded-lg text-xs font-bold;
+    @apply px-2.5 py-1 rounded-lg text-xs font-bold;
   }
 
   .stock-badge-low {
-    @apply bg-red-100 text-red-600;
+    @apply bg-clinic-error-bg text-clinic-error;
   }
 
   .stock-badge-ok {
-    @apply bg-emerald-100 text-emerald-600;
+    @apply bg-clinic-success-bg text-clinic-success;
   }
 }
 
 /* ======================================= */
-/* Global Text Color Override */
+/* Utility Classes */
 /* ======================================= */
 
 @layer utilities {
-  /* Override all Tailwind text color utilities to black */
-  .text-white,
-  .text-black,
-  .text-gray-50,
-  .text-gray-100,
-  .text-gray-200,
-  .text-gray-300,
-  .text-gray-400,
-  .text-gray-500,
-  .text-gray-600,
-  .text-gray-700,
-  .text-gray-800,
-  .text-gray-900,
-  .text-clinic-text,
-  .text-clinic-text-muted,
-  .text-clinic-accent,
-  .text-red-400,
-  .text-red-500,
-  .text-red-600,
-  .text-amber-400,
-  .text-amber-500,
-  .text-amber-600,
-  .text-pink-400,
-  .text-pink-500,
-  .text-cyan-400,
-  .text-cyan-500,
-  .text-emerald-400,
-  .text-emerald-500,
-  .text-emerald-600 {
-    color: #000000 !important;
+  /* Glass effect */
+  .glass {
+    @apply bg-white/70 backdrop-blur-lg border border-white/20;
+  }
+
+  /* Smooth hover scale */
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-clinic-primary to-clinic-secondary;
   }
 }
 
@@ -380,7 +379,8 @@
     print-color-adjust: exact !important;
   }
 
-  html, body {
+  html,
+  body {
     background: white !important;
     color: black !important;
     font-size: 12pt !important;
@@ -396,13 +396,11 @@
     display: block !important;
   }
 
-  /* Reset main content margins for print */
   main {
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  /* Card styles for print */
   .card {
     background: white !important;
     border: 1px solid #e5e7eb !important;
@@ -411,60 +409,6 @@
     max-width: 100% !important;
   }
 
-  /* Text colors for print */
-  .text-white,
-  .text-clinic-text,
-  .text-clinic-accent {
-    color: black !important;
-  }
-
-  .text-gray-400,
-  .text-gray-500,
-  .text-clinic-text-muted {
-    color: #4b5563 !important;
-  }
-
-  /* Border colors for print */
-  .border-clinic-border {
-    border-color: #e5e7eb !important;
-  }
-
-  /* Badge styles for print */
-  .badge {
-    border: 1px solid currentColor !important;
-  }
-
-  .badge-success {
-    background: #d1fae5 !important;
-    color: #047857 !important;
-  }
-
-  .badge-warning {
-    background: #fef3c7 !important;
-    color: #b45309 !important;
-  }
-
-  .badge-info {
-    background: #cffafe !important;
-    color: #0e7490 !important;
-  }
-
-  /* Hide backgrounds */
-  .bg-clinic-dark,
-  .bg-clinic-surface,
-  .bg-clinic-accent\/20,
-  .bg-pink-500\/20 {
-    background: transparent !important;
-  }
-
-  /* Icon containers for print */
-  .rounded-xl,
-  .rounded-lg,
-  .rounded-full {
-    border: 1px solid #e5e7eb !important;
-  }
-
-  /* Page settings */
   @page {
     size: 80mm auto;
     margin: 5mm;

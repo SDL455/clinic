@@ -46,6 +46,7 @@ const menuItems = computed<MenuItem[]>(() => [
   { label: "ປະຫວັດການຂາຍ", icon: "lucide:file-text", to: "/sales" },
   { label: "ລາຍງານ", icon: "lucide:bar-chart-2", to: "/reports", adminOnly: true },
   { label: "ຜູ້ໃຊ້", icon: "lucide:user-cog", to: "/users", adminOnly: true },
+  { label: "ຂໍ້ມູນຕິດຕໍ່", icon: "lucide:contact", to: "/settings/contact", adminOnly: true },
   { label: "ຕັ້ງຄ່າຄລີນິກ", icon: "lucide:settings", to: "/settings", adminOnly: true },
 ]);
 

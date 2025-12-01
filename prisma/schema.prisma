@@ -25,6 +25,26 @@ model ClinicSettings {
   @@map("clinic_settings")
 }
 
+model ContactInfo {
+  id          Int      @id @default(autoincrement())
+  phone       String?  @db.Text // Contact phone numbers (JSON array)
+  email       String?
+  facebook    String?
+  line        String?
+  website     String?
+  address     String?  @db.Text
+  province    String?  @default("ນະຄອນຫຼວງວຽງຈັນ")
+  district    String?
+  village     String?
+  openingHours String? @db.Text // JSON format for opening hours
+  mapUrl      String?  @db.Text // Google Maps embed URL
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contact_info")
+}
+
 // =========================================
 // USER & AUTHENTICATION
 // =========================================
